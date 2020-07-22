@@ -1,4 +1,4 @@
-﻿//#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -261,7 +261,7 @@ char** lex_sort(char** mass, int num) {
 		if (tmp > maxl) maxl = tmp;
 	}
 
-	int* len_cnt = (int*)malloc(sizeof(int) * (maxl + 1));
+	int* len_cnt = (int*)malloc(sizeof(int) * (maxl + 1)); // create len_cnt
 
 	for (int i = 0; i <= maxl; i++) {
 		len_cnt[i] = 0;
@@ -349,11 +349,13 @@ char** lex_sort(char** mass, int num) {
 		strcpy(ans[i], queue[i + 1]);
 	}
 
-	free(len_cnt);
+	free(len_cnt); // delete len_cnt
+
 	free(bucket1); free(bucket2);
 	free(queue);
-	for (int i = 0; i <= maxl; i++)
-		free(length[i]);
+	free(mass);
+
+	for (int i = 0; i <= maxl; i++) free(length[i]);
 	free(length);
 
 	return ans;
@@ -374,18 +376,20 @@ char* Assign_Canonical_Names(int v, Row* graph[]) {
 
 	while (ptr != NULL) {
 		if (used[ptr->value] == false) {
-			strcpy(tmp, Assign_Canonical_Names(ptr->value, graph));
+			char* ttt = Assign_Canonical_Names(ptr->value, graph);
+			strcpy(tmp, ttt);
+			//free(ttt);
 			names[cnt] = (char*)malloc((strlen(tmp) + 1)*sizeof(char));
 			strcpy(names[cnt], tmp);
-
 			cnt++;
 		}
 		ptr = ptr->next;
 	}
 
+	//debug
 	char** tempo = lex_sort(names, cnt);
-	
 	names = tempo;
+	//
 
 	for (int i = 0; i < cnt; i++)
 		strcat(new_name, names[i]);
@@ -399,7 +403,7 @@ char* Assign_Canonical_Names(int v, Row* graph[]) {
 
 int** load_tree() {
 	FILE* load_file_stream;
-	load_file_stream = fopen("tree.txt", "r");
+	load_file_stream = fopen("tree4.txt", "r");
 	int c = 0;
 	int m;
 	fscanf(load_file_stream, "%d", &n);
@@ -416,11 +420,6 @@ int** load_tree() {
 	fclose(load_file_stream);
 	
 	return trees;
-}
-
-void flash() {
-	for (int i = 0; i <= n; i++) used[i] = 0;
-	for (int i = 0; i <= n; i++) deg[i] = 0;
 }
 
 int main() {
@@ -451,11 +450,12 @@ int main() {
 	root = tmp[(root + 1) / 2];
 	free(tmp);
 
-	flash();
+	for (int i = 0; i <= n; i++) used[i] = 0;
 
 	char* name1 = Assign_Canonical_Names(root, graph1);
 
-	flash();
+	for (int i = 0; i <= n; i++) used[i] = 0;
+	for (int i = 0; i <= n; i++) deg[i] = 0;
 
 	for (int i = 1; i < n; i++) {
 		insert(graph2[data[2][i - 1]], data[3][i - 1]);
@@ -470,15 +470,15 @@ int main() {
 	root = tmp[(root + 1) / 2];
 	free(tmp);
 
-	flash();
+	for (int i = 0; i <= n; i++) used[i] = 0;
 
 	char* name2 = Assign_Canonical_Names(root, graph2);
 	//printf("%s %s\n", name1, name2);
 	if(strcmp(name1, name2) == 0) printf("Isomorphic\n");
 	else printf("Not isomorphic\n");
 
-	for(int i = 0; i < 4; i++)
-		free(data[i]); 
+	for (int i = 0; i < 4; i++)
+		free(data[i]);
 	free(data);
 
 	//more tests
@@ -514,23 +514,4 @@ int main() {
 	lx_sort(test2, 3);
 
 	for (int i = 0; i < 3; i++) printf("%s ", test2[i]);*/
-
-	//example`s
-	/*
-	6
-	0 1 1 1 3 3
-	3 1 0 1 3 3
-	6
-	0 1 1 1 3 3
-	3 1 0 1 3 5
-	6
-	0 1 1 1 3 3
-	3 1 0 1 2 2
-	6
-	0 1 2 3 4 5
-	3 1 0 1 3 3
-	6
-	0 1 2 3 4 4
-	3 1 0 1 3 3
-	*/
 }
