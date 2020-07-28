@@ -55,7 +55,7 @@ Row* insert(Row* row, int vert) {
 		t = row->first;
 		while (t->next != NULL)
 			t = t->next;
-		
+
 		t->next = malloc(sizeof(Vert));
 		t->next->value = vert;
 		t->next->next = NULL;
@@ -65,13 +65,14 @@ Row* insert(Row* row, int vert) {
 	return row;
 }
 
-int partition(ll *mass, int first, int last){
+//sort nlogn
+int partition(ll* mass, int first, int last) {
 	ll x = mass[last];
 	int i = first - 1;
 	ll tmp = 0;
 	for (int j = first; j < last; j++) {
 		if (mass[j] < x) {
-			i++; 
+			i++;
 			tmp = mass[i];
 			mass[i] = mass[j];
 			mass[j] = tmp;
@@ -84,7 +85,7 @@ int partition(ll *mass, int first, int last){
 	return i + 1;
 }
 
-void sort(ll *mass, int first, int last) {
+void sort(ll* mass, int first, int last) {
 	if (first < last) {
 		int q = partition(mass, first, last);
 		sort(mass, first, q - 1);
@@ -108,9 +109,9 @@ void Tree_Print(Row* graph[], int vn) {
 ull get_hash(int vert, Row* graph[]) {
 	used[vert] = true;
 	int size = graph[vert]->row_length;
-	
+
 	long long* child_hash = malloc(size * sizeof(long long));
-	
+
 	int cnt = 0;
 	ull hash = 0;
 	ull power = 1;
@@ -145,7 +146,7 @@ int dfs(int v, int depth, Row* graph[]) {
 	int tmp = depth;
 	Vert* ptr = graph[v]->first;
 
-	while (ptr != NULL){
+	while (ptr != NULL) {
 		if (used[ptr->value] == false) {
 			int t = dfs(ptr->value, depth + 1, graph);
 			if (t > tmp) {
@@ -171,7 +172,7 @@ int bfs(int v, Row* graph[]) {
 	levels[v] = 1;
 	Vert* ptr = NULL;
 
-	while(qvalue_cnt > 0){
+	while (qvalue_cnt > 0) {
 
 		int vert = first->value;
 		used[vert] = true;
@@ -218,7 +219,7 @@ int* longest_path(Row* graph[]) {
 	while (vert != fvert) {
 		path[levels[vert]] = vert;
 		ptr = graph[vert]->first;
-		while (ptr != NULL){
+		while (ptr != NULL) {
 			if (levels[ptr->value] < levels[vert]) {
 				vert = ptr->value;
 				break;
@@ -239,7 +240,7 @@ void lx_sort(const char* arr[], int n) {
 	qsort(arr, n, sizeof(const char*), myCompare);
 }
 
-int compareStrings(const char* s1,const char* s2) {
+int compareStrings(const char* s1, const char* s2) {
 	size_t i;
 
 	for (i = 0; s1[i] == s2[i]; i++) {
@@ -267,6 +268,7 @@ char** lex_sort(char** mass, int num) {
 		len_cnt[i] = 0;
 	}
 
+	// create length
 	char*** length = (char***)malloc(sizeof(char**) * (maxl + 1));
 
 	for (int i = 0; i <= maxl; i++) {
@@ -277,19 +279,20 @@ char** lex_sort(char** mass, int num) {
 
 	for (int i = 0; i < num; i++) {
 		tmp = strlen(mass[i]);
-		
+
 		j = len_cnt[tmp];
 
 		length[tmp][j] = mass[i];
-		
+
 		len_cnt[tmp] = j + 1;
 	}
 
 	int tmp_ptr = 1, q_ptr = 1, b1_ptr = 0, b2_ptr = 0;
 
-	char** queue = malloc(sizeof(char*) * (num + 1));
-	char** bucket1 = malloc(sizeof(char*) * num);
-	char** bucket2 = malloc(sizeof(char*) * num);
+	//
+	char** queue = (char**)malloc(sizeof(char*) * (num + 1));
+	char** bucket1 = (char**)malloc(sizeof(char*) * num);
+	char** bucket2 = (char**)malloc(sizeof(char*) * num);
 
 	for (int l = maxl; l > 0; l--) {
 		tmp_ptr = 1;
@@ -331,21 +334,21 @@ char** lex_sort(char** mass, int num) {
 			queue[q_ptr] = bucket1[i];
 			q_ptr++;
 		}
-		
+
 		b1_ptr = 0;
-		
+
 		for (int i = 0; i < b2_ptr; i++) {
 			queue[q_ptr] = bucket2[i];
 			q_ptr++;
 		}
-		
+
 		b2_ptr = 0;
 	}
 
-	char** ans = malloc(sizeof(char*) * num);
+	char** ans = (char**)malloc(sizeof(char*) * num);
 
 	for (int i = 0; i < num; i++) {
-		ans[i] = malloc(sizeof(char) * strlen(queue[i + 1]));
+		ans[i] = (char*)malloc(sizeof(char) * strlen(queue[i + 1]));
 		strcpy(ans[i], queue[i + 1]);
 	}
 
@@ -353,8 +356,6 @@ char** lex_sort(char** mass, int num) {
 
 	free(bucket1); free(bucket2);
 	free(queue);
-	free(mass);
-
 	for (int i = 0; i <= maxl; i++) free(length[i]);
 	free(length);
 
@@ -363,62 +364,68 @@ char** lex_sort(char** mass, int num) {
 
 char* Assign_Canonical_Names(int v, Row* graph[]) {
 	used[v] = true;
-	
-	int cnt = 0;
+
+	int cnt = 0, len = 0;
 	Vert* ptr = graph[v]->first;
 
 	char** names = (char**)malloc(sizeof(char*) * (deg[v] + 1));
 
-	char* new_name = malloc(sizeof(char) * (2 * deg[v] + 1));
-	char* tmp = malloc(sizeof(char) * (2 * deg[v] + 1));
-
-	strcpy(new_name, "1");
-
 	while (ptr != NULL) {
 		if (used[ptr->value] == false) {
 			char* ttt = Assign_Canonical_Names(ptr->value, graph);
+
+			char* tmp = (char*)malloc(sizeof(char) * (strlen(ttt) + 1));
 			strcpy(tmp, ttt);
-			//free(ttt);
-			names[cnt] = (char*)malloc((strlen(tmp) + 1)*sizeof(char));
+
+			free(ttt);
+			len += strlen(tmp);
+			
+			names[cnt] = (char*)malloc((strlen(tmp) + 1) * sizeof(char));
 			strcpy(names[cnt], tmp);
+			
+			free(tmp);
 			cnt++;
 		}
 		ptr = ptr->next;
 	}
+	
+	char* new_name = (char*)malloc(sizeof(char) * (len + 10)); //!!!!!!!
 
-	//debug
-	char** tempo = lex_sort(names, cnt);
-	names = tempo;
-	//
+	strcpy(new_name, "1");
+
+	char** sort_names = lex_sort(names, cnt);
+	
+	for (int i = 0; i < cnt; i++) free(names[i]);
+	free(names);
 
 	for (int i = 0; i < cnt; i++)
-		strcat(new_name, names[i]);
-	
+		strcat(new_name, sort_names[i]);
+
 	strcat(new_name, "0");
-	
-	free(names);
+
+	free(sort_names);
 
 	return new_name;
 }
 
 int** load_tree() {
 	FILE* load_file_stream;
-	load_file_stream = fopen("tree4.txt", "r");
+	load_file_stream = fopen("tree1.txt", "r");
 	int c = 0;
 	int m;
 	fscanf(load_file_stream, "%d", &n);
-	
+
 	int** trees = (int**)malloc(4 * sizeof(int*));
-	for(int i = 0; i < 4; i++) trees[i] = malloc(n * sizeof(int));
-	
+	for (int i = 0; i < 4; i++) trees[i] = malloc(n * sizeof(int));
+
 	for (int i = 0; i < 2 * n - 2; i++)
 		fscanf(load_file_stream, "%d", &trees[i % 2][i / 2]);
 
 	for (int i = 0; i < 2 * n - 2; i++)
 		fscanf(load_file_stream, "%d", &trees[(i % 2) + 2][i / 2]);
-	
+
 	fclose(load_file_stream);
-	
+
 	return trees;
 }
 
@@ -431,7 +438,7 @@ int main() {
 		graph1[i] = malloc(sizeof(Row));
 		graph1[i]->first = NULL;
 		graph1[i]->row_length = 0;
-		
+
 		graph2[i] = malloc(sizeof(Row));
 		graph2[i]->first = NULL;
 		graph2[i]->row_length = 0;
@@ -474,7 +481,7 @@ int main() {
 
 	char* name2 = Assign_Canonical_Names(root, graph2);
 	//printf("%s %s\n", name1, name2);
-	if(strcmp(name1, name2) == 0) printf("Isomorphic\n");
+	if (strcmp(name1, name2) == 0) printf("Isomorphic\n");
 	else printf("Not isomorphic\n");
 
 	for (int i = 0; i < 4; i++)
